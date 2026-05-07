@@ -28,7 +28,7 @@ end
 def release_lock(lock_file)
   lock_file.flock(File::Lock::Unlock)
   lock_file.close
-  File.delete(LOCK_FILE) if File.exist?(LOCK_FILE)
+  File.delete(LOCK_FILE) if File.exists?(LOCK_FILE)
 end
 
 def set(key_value : String)
@@ -37,7 +37,7 @@ def set(key_value : String)
   begin
     key, value = key_value.split("=", 2)
     
-    unless File.exist?(".anv/store")
+    unless File.exists?(".anv/store")
       puts "ERROR: No store found. Run `anv init` first."
       return
     end
