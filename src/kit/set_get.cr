@@ -6,7 +6,7 @@ def set(key_value : String) : String?
   end
   
   encrypted = File.read(".anv/store")
-  plain = decrypt(encrypted, read_master_key)
+  plain = decrypt(encrypted)
   data = JSON.parse(plain)
   
   data[key] = value
@@ -23,7 +23,7 @@ def get(key : String) : String?
   end
   
   encrypted = File.read(".anv/store")
-  plain = decrypt(encrypted, read_master_key)
+  plain = decrypt(encrypted)
   data = JSON.parse(plain)
   
   if value = data[key]?
