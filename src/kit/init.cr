@@ -4,7 +4,7 @@ require "random/secure"
 
 def init
   puts "...initializing .anv..."
-  if File.exist?(".anv")
+  if File.exists?(".anv")
     puts ".anv file exists use -h for help"
   else
     Dir.mkdir_p(".anv")
