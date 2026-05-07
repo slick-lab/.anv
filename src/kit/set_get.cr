@@ -7,15 +7,17 @@ def set(key_value : String) : String?
     return "no store to set pls run init or -h"
   end
   
-  encrypted = File.read(".anv/store")
-  plain = decrypt(read_master_key)
-  data = JSON.parse(plain)
+  master_key = read_master_key
+  return "master key not found" unless master_key
   
+  plain = decrypt(master_key)
+  return "decryption failed" unless plain
+  
+  data = JSON.parse(plain)
   data[key] = value
   new_plain = data.to_json
-  new_encrypt = encrypt(new_plain, read_master_key)
-  File.write(".anv/store", new_encrypt)
   
+  encrypt(new_plain, master_key)
   return "successfully set #{key}"
 end 
 
@@ -24,8 +26,12 @@ def get(key : String) : String?
     return ".anv/store does not exist pls run init or -h"
   end
   
-  encrypted = File.read(".anv/store")
-  plain = decrypt(read_master_key)
+  master_key = read_master_key
+  return "master key not found" unless master_key
+  
+  plain = decrypt(master_key)
+  return "decryption failed" unless plain
+  
   data = JSON.parse(plain)
   
   if value = data[key]?
