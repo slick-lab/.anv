@@ -1,0 +1,50 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Crystal
+        uses: crystal-lang/install-crystal@v1
+      - name: Build binary
+        run: crystal build src/anv.cr -o anv-linux
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: anv-linux
+          path: anv-linux
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Crystal
+        uses: crystal-lang/install-crystal@v1
+      - name: Build binary
+        run: crystal build src/anv.cr -o anv-macos
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: anv-macos
+          path: anv-macos
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Crystal
+        uses: crystal-lang/install-crystal@v1
+      - name: Build binary
+        run: crystal build src/anv.cr -o anv-windows.exe
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: anv-windows
+          path: anv-windows.exe
