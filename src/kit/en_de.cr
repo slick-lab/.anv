@@ -4,7 +4,7 @@ require "base64"
 def read_master_key : String?
   master_key_path = ".anv/master.key"
   
-  unless File.exist?(master_key_path)
+  unless File.exists?(master_key_path)
     puts "ERROR: No master key found at #{master_key_path}"
     puts "Please run init first"
     return nil
