@@ -1,3 +1,5 @@
+require "./en_de"
+
 def set(key_value : String) : String?
   key, value = key_value.split("=", 2)
   
@@ -6,7 +8,7 @@ def set(key_value : String) : String?
   end
   
   encrypted = File.read(".anv/store")
-  plain = decrypt(encrypted)
+  plain = decrypt(read_master_key)
   data = JSON.parse(plain)
   
   data[key] = value
@@ -23,7 +25,7 @@ def get(key : String) : String?
   end
   
   encrypted = File.read(".anv/store")
-  plain = decrypt(encrypted)
+  plain = decrypt(read_master_key)
   data = JSON.parse(plain)
   
   if value = data[key]?
