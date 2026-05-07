@@ -11,7 +11,7 @@ def init
     key = Random::Secure.hex(32)
     File.write(".anv/master.key", key)
     File.chmod(".anv/master.key", 0o600)
-    if File.exist?(".gitignore")
+    if File.exists?(".gitignore")
       ignore_content = File.read(".gitignore")
       unless ignore_content.includes?(".anv/master.key")
         File.open(".gitignore", "a") do |file|
