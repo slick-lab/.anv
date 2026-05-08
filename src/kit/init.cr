@@ -1,5 +1,4 @@
-require "openssl/cipher"
-require "base64"
+require "./en_de"
 require "random/secure"
 
 def init
@@ -8,9 +7,12 @@ def init
     puts ".anv file exists use -h for help"
   else
     Dir.mkdir_p(".anv")
-    key = Random::Secure.hex(32)
+    # Generate a 64-byte key (128 hex chars) for CBC + HMAC
+    key = Random::Secure.hex(64)
     File.write(".anv/master.key", key)
     File.chmod(".anv/master.key", 0o600)
+    
+    # Update .gitignore
     if File.exists?(".gitignore")
       ignore_content = File.read(".gitignore")
       unless ignore_content.includes?(".anv/master.key")
@@ -21,17 +23,16 @@ def init
     else
       File.write(".gitignore", ".anv/master.key\n")
     end
+    
+    # Create initial encrypted store using your new encrypt_hmac
     template_data = "{}"
-    cipher = OpenSSL::Cipher.new("AES-256-GCM")
-    cipher.encrypt
-    cipher.key = key.hexbytes
-    iv = Random::Secure.random_bytes(12)
-    cipher.iv = iv
-    encrypted = cipher.update(template_data) + cipher.final
-    tag = cipher.auth_tag
-    combined = iv + tag + encrypted
-    encoded = Base64.encode(combined)
-    File.write(".anv/store", encoded)
+    encrypted_store = encrypt_hmac(template_data, key)
+    if encrypted_store.nil?
+      puts "ERROR: Failed to encrypt initial store"
+      return
+    end
+    File.write(".anv/store", encrypted_store)
+    
     puts ".anv initialized successfully"
     puts "master key saved to .anv/master.key"
     puts "do NOT commit .anv/master.key to git"
