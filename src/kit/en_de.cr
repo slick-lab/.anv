@@ -1,72 +1,68 @@
 require "openssl/cipher"
 require "base64"
+require "hmac"
 
-@[Link("crypto")]
-lib LibCrypto
-  EVP_CTRL_GCM_GET_TAG = 0x10
-  EVP_CTRL_GCM_SET_TAG = 0x11
-  EVP_GCM_TLS_TAG_LEN = 16
-  fun evp_cipher_ctx_ctrl = EVP_CIPHER_CTX_ctrl(ctx : Void*, type : Int32, arg : Int32, ptr : Void*) : Int32
-end
-
-class OpenSSL::Cipher
-  def auth_tag : Bytes
-    tag = Bytes.new(LibCrypto::EVP_GCM_TLS_TAG_LEN)
-    LibCrypto.evp_cipher_ctx_ctrl(@ctx, LibCrypto::EVP_CTRL_GCM_GET_TAG, tag.size, pointerof(tag).as(Void*))
-    tag
-  end
-
-  def auth_tag=(tag : Bytes)
-    LibCrypto.evp_cipher_ctx_ctrl(@ctx, LibCrypto::EVP_CTRL_GCM_SET_TAG, tag.size, pointerof(tag).as(Void*))
-  end
-end
-
-def read_master_key : String?
-  master_key_path = ".anv/master.key"
+def encrypt_hmac(data : String, key : String) : String?
+  # Key derivation: use first 32 bytes for encryption, next 32 bytes for HMAC
+  raw_key = key.hexbytes
+  enc_key = raw_key[0, 32]
+  hmac_key = raw_key[32, 32]
   
-  unless File.exists?(master_key_path)
-    puts "ERROR: No master key found at #{master_key_path}"
-    puts "Please run init first"
-    return nil
-  end
-  
-  File.read(master_key_path).strip
-end
-
-def encrypt(data : String, key : String) : String?
-  cipher = OpenSSL::Cipher.new("AES-256-GCM")
+  # Encrypt
+  cipher = OpenSSL::Cipher.new("AES-256-CBC")
   cipher.encrypt
-  cipher.key = key.hexbytes
+  cipher.key = enc_key
   
-  iv = Random::Secure.random_bytes(12)
+  iv = Random::Secure.random_bytes(16)
   cipher.iv = iv
   
   encrypted = cipher.update(data) + cipher.final
-  tag = cipher.auth_tag
   
-  combined = iv + tag + encrypted
+  # Create HMAC of IV + encrypted data
+  hmac = HMAC.new(hmac_key, :sha256)
+  hmac << iv
+  hmac << encrypted
+  mac = hmac.digest
+  
+  # Pack: IV (16) + MAC (32) + Encrypted data
+  combined = iv + mac + encrypted
   Base64.encode(combined)
 rescue ex
   puts "Encryption failed: #{ex.message}"
-  return nil
+  nil
 end
 
-def decrypt(encoded : String, key : String) : String?
-  cipher = OpenSSL::Cipher.new("AES-256-GCM")
-  cipher.decrypt
-  cipher.key = key.hexbytes
+def decrypt_hmac(encoded : String, key : String) : String?
+  raw_key = key.hexbytes
+  enc_key = raw_key[0, 32]
+  hmac_key = raw_key[32, 32]
   
   combined = Base64.decode(encoded)
-  iv = combined[0, 12]
-  tag = combined[12, 16]
-  encrypted_data = combined[28..-1]
   
+  # Unpack
+  iv = combined[0, 16]
+  mac = combined[16, 32]
+  encrypted_data = combined[48..-1]
+  
+  # Verify HMAC before decryption
+  hmac = HMAC.new(hmac_key, :sha256)
+  hmac << iv
+  hmac << encrypted_data
+  expected_mac = hmac.digest
+  
+  unless mac.bytes == expected_mac.bytes
+    puts "Decryption failed: HMAC mismatch - data tampered or wrong key"
+    return nil
+  end
+  
+  # Decrypt
+  cipher = OpenSSL::Cipher.new("AES-256-CBC")
+  cipher.decrypt
+  cipher.key = enc_key
   cipher.iv = iv
-  cipher.auth_tag = tag
   
   cipher.update(encrypted_data) + cipher.final
 rescue ex
   puts "Decryption failed: #{ex.message}"
-  puts "Possible causes: corrupted store or wrong master key"
-  return nil
+  nil
 end
