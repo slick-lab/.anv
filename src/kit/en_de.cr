@@ -1,6 +1,26 @@
 require "openssl/cipher"
 require "base64"
 
+@[Link("crypto")]
+lib LibCrypto
+  EVP_CTRL_GCM_GET_TAG = 0x10
+  EVP_CTRL_GCM_SET_TAG = 0x11
+  EVP_GCM_TLS_TAG_LEN = 16
+  fun evp_cipher_ctx_ctrl = EVP_CIPHER_CTX_ctrl(ctx : Void*, type : Int32, arg : Int32, ptr : Void*) : Int32
+end
+
+class OpenSSL::Cipher
+  def auth_tag : Bytes
+    tag = Bytes.new(LibCrypto::EVP_GCM_TLS_TAG_LEN)
+    LibCrypto.evp_cipher_ctx_ctrl(@ctx, LibCrypto::EVP_CTRL_GCM_GET_TAG, tag.size, pointerof(tag).as(Void*))
+    tag
+  end
+
+  def auth_tag=(tag : Bytes)
+    LibCrypto.evp_cipher_ctx_ctrl(@ctx, LibCrypto::EVP_CTRL_GCM_SET_TAG, tag.size, pointerof(tag).as(Void*))
+  end
+end
+
 def read_master_key : String?
   master_key_path = ".anv/master.key"
   
