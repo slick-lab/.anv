@@ -24,7 +24,8 @@ def init
       File.write(".gitignore", ".anv/master.key\n")
     end
     
-    # Create initial encrypted store using your new encrypt_hmac
+    # Create initial encrypted store using 
+    new encrypt_hmac
     template_data = "{}"
     encrypted_store = encrypt_hmac(template_data, key)
     if encrypted_store.nil?
