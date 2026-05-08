@@ -1,6 +1,6 @@
 require "openssl/cipher"
+require "openssl/hmac"
 require "base64"
-require "hmac"
 
 def read_master_key : String?
   master_key_path = ".anv/master.key"
@@ -15,12 +15,10 @@ def read_master_key : String?
 end
 
 def encrypt_hmac(data : String, key : String) : String?
-  # Key derivation: use first 32 bytes for encryption, next 32 bytes for HMAC
   raw_key = key.hexbytes
   enc_key = raw_key[0, 32]
   hmac_key = raw_key[32, 32]
   
-  # Encrypt
   cipher = OpenSSL::Cipher.new("AES-256-CBC")
   cipher.encrypt
   cipher.key = enc_key
@@ -30,13 +28,8 @@ def encrypt_hmac(data : String, key : String) : String?
   
   encrypted = cipher.update(data) + cipher.final
   
-  # Create HMAC of IV + encrypted data
-  hmac = HMAC.new(hmac_key, :sha256)
-  hmac << iv
-  hmac << encrypted
-  mac = hmac.digest
+  mac = OpenSSL::HMAC.digest(OpenSSL::Digest::SHA256.new, hmac_key, iv + encrypted)
   
-  # Pack: IV (16) + MAC (32) + Encrypted data
   combined = iv + mac + encrypted
   Base64.encode(combined)
 rescue ex
@@ -51,23 +44,17 @@ def decrypt_hmac(encoded : String, key : String) : String?
   
   combined = Base64.decode(encoded)
   
-  # Unpack
   iv = combined[0, 16]
   mac = combined[16, 32]
   encrypted_data = combined[48..-1]
   
-  # Verify HMAC before decryption
-  hmac = HMAC.new(hmac_key, :sha256)
-  hmac << iv
-  hmac << encrypted_data
-  expected_mac = hmac.digest
+  expected_mac = OpenSSL::HMAC.digest(OpenSSL::Digest::SHA256.new, hmac_key, iv + encrypted_data)
   
-  unless mac.bytes == expected_mac.bytes
-    puts "Decryption failed: HMAC mismatch - data tampered or wrong key"
+  unless OpenSSL.secure_compare(mac, expected_mac)
+    puts "Decryption failed: HMAC mismatch"
     return nil
   end
   
-  # Decrypt
   cipher = OpenSSL::Cipher.new("AES-256-CBC")
   cipher.decrypt
   cipher.key = enc_key
