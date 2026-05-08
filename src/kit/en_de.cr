@@ -2,6 +2,18 @@ require "openssl/cipher"
 require "base64"
 require "hmac"
 
+def read_master_key : String?
+  master_key_path = ".anv/master.key"
+  
+  unless File.exist?(master_key_path)
+    puts "ERROR: No master key found at #{master_key_path}"
+    puts "Please run init first"
+    return nil
+  end
+  
+  File.read(master_key_path).strip
+end
+
 def encrypt_hmac(data : String, key : String) : String?
   # Key derivation: use first 32 bytes for encryption, next 32 bytes for HMAC
   raw_key = key.hexbytes
