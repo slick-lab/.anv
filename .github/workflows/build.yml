@@ -2,9 +2,9 @@ name: Build
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build-linux:
@@ -34,17 +34,3 @@ jobs:
         with:
           name: anv-macos
           path: anv-macos
-
-  build-windows:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Crystal
-        uses: crystal-lang/install-crystal@v1
-      - name: Build binary
-        run: crystal build src/anv.cr -o anv-windows.exe
-      - name: Upload binary
-        uses: actions/upload-artifact@v4
-        with:
-          name: anv-windows
-          path: anv-windows.exe

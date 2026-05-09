@@ -11,7 +11,7 @@ def init
     key = Random::Secure.hex(64)
     File.write(".anv/master.key", key)
     File.chmod(".anv/master.key", 0o600)
-    
+
     # Update .gitignore
     if File.exists?(".gitignore")
       ignore_content = File.read(".gitignore")
@@ -23,16 +23,16 @@ def init
     else
       File.write(".gitignore", ".anv/master.key\n")
     end
-    
+
     # Create initial encrypted store using  new encrypt_hmac
     template_data = "{}"
-    encrypted_store = encrypt_hmac(template_data, key)
+    encrypted_store = encrypt(template_data, key)
     if encrypted_store.nil?
       puts "ERROR: Failed to encrypt initial store"
       return
     end
     File.write(".anv/store", encrypted_store)
-    
+
     puts ".anv initialized successfully"
     puts "master key saved to .anv/master.key"
     puts "do NOT commit .anv/master.key to git"
