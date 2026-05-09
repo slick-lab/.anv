@@ -34,27 +34,43 @@ esac
 
 echo -e "${YELLOW}Downloading $BINARY_NAME...${NC}"
 
-# Check if gh CLI is available
-if ! command -v gh &> /dev/null; then
-  echo -e "${RED}Error: GitHub CLI (gh) is required but not installed.${NC}"
-  echo "Please install it from: https://cli.github.com"
-  echo ""
-  echo "Or manually download the binary:"
-  echo "Linux:  https://github.com/slick-lab/.anv/actions/runs/25604543565/artifacts/6896595962"
-  echo "macOS:  https://github.com/slick-lab/.anv/actions/runs/25604543565/artifacts/6896596357"
+# Check if curl is available
+if ! command -v curl &> /dev/null; then
+  echo -e "${RED}Error: curl is required but not installed.${NC}"
   exit 1
 fi
 
-# Download artifact using gh CLI
+# Check if unzip is available
+if ! command -v unzip &> /dev/null; then
+  echo -e "${RED}Error: unzip is required but not installed.${NC}"
+  exit 1
+fi
+
+# Create temporary directory
 TEMP_DIR=$(mktemp -d)
 trap "rm -rf $TEMP_DIR" EXIT
 
 cd "$TEMP_DIR"
 
-# Download the artifact
-gh run download 25604543565 \
-  --name "$BINARY_NAME" \
-  --repo slick-lab/.anv
+# GitHub Actions artifact download URL
+ARTIFACT_URL="https://github.com/slick-lab/.anv/actions/runs/25604543565/artifacts/$ARTIFACT_ID/download"
+
+echo -e "${YELLOW}Downloading artifact from GitHub Actions...${NC}"
+
+# Download the artifact (it will be a ZIP file)
+if ! curl -L -o artifact.zip "$ARTIFACT_URL" 2>/dev/null; then
+  echo -e "${RED}Error: Failed to download artifact from:${NC}"
+  echo "$ARTIFACT_URL"
+  echo ""
+  echo "Make sure the artifact is still available and your internet connection is working."
+  exit 1
+fi
+
+# Extract the artifact
+if ! unzip -q artifact.zip; then
+  echo -e "${RED}Error: Failed to extract artifact${NC}"
+  exit 1
+fi
 
 # Find the binary (it might be in a subdirectory)
 BINARY_PATH=$(find . -name "*anv*" -type f | head -n 1)
