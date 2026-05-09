@@ -5,7 +5,7 @@ A proposed alternative to fix .env
 ## why anv
  | .env problems | .anv solutions |
  |  -----  | ----- |
- | plaintext secret on disk | AES-256-GCM encrypted | 
+ | plaintext secret on disk | AES-256-CBC encrypted  with hmac | 
  | Accendengal git commit | ENCRYPTED store gitignored master keys |
  | AI agents read your secrets | ENCRYPTED blob = gibberish |
  | Dotenv library support | cli simple interface | 
