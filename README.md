@@ -6,7 +6,7 @@ A proposed alternative to fix .env
  | .env problems | .anv solutions |
  |  -----  | ----- |
  | plaintext secret on disk | AES-256-CBC encrypted  with hmac | 
- | Accendengal git commit | ENCRYPTED store gitignored master keys |
+ | Accidental git commit | ENCRYPTED store gitignored master keys |
  | AI agents read your secrets | ENCRYPTED blob = gibberish |
  | Dotenv library support | cli simple interface | 
  | No structure | JSON + CLI |
@@ -14,7 +14,7 @@ A proposed alternative to fix .env
  ## install
  - on liner install command 
  ```bash
- curlf -fsl https://raw.githubusercontent.com/slick-lab/.anv/refs/heads/main/install.sh | sh
+ curl -fsl https://raw.githubusercontent.com/slick-lab/.anv/refs/heads/main/install.sh | sh
 ```
 
 ##  build 
@@ -53,7 +53,7 @@ your code stays the same
 you just change how you run it 
 
 ## Security
-- AES-256-GCM encryption
+- AES-256-CBC + HMAC encryption
 - Master key stored separatelyand gitignored
 - Encrypted file safe to commit
 - Atomic writes prevents corruption
