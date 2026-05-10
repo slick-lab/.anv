@@ -8,6 +8,7 @@ def init
   else
     Dir.mkdir_p(".anv")
     template_data = "{}"
+    key = read_master_key
     encrypted_store = encrypt(template_data, key)
     if encrypted_store.nil?
       puts "ERROR: Failed to encrypt initial store"
