@@ -1,15 +1,11 @@
 require "openssl/cipher"
 require "openssl/hmac"
 require "base64"
+require "./master_key"
 
 def read_master_key : String?
-  master_key_path = ".anv/master.key"
-
-  unless File.exists?(master_key_path)
-    puts "ERROR: No master key found at #{master_key_path}"
-    puts "Please run init first"
-    return nil
-  end
+  get_master_key
+ end
 
   File.read(master_key_path).strip
 end
