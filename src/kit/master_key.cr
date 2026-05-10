@@ -11,7 +11,7 @@ def set_master_key : String
       return key
     else
       puts " Failed to store master key with secret-tool"
-      nil 
+      "" 
     end
   elsif system("which security > /dev/null 2>&1")
     success = system("security add-generic-password -a #{ENV["USER"]} -s anv-master-key -w '#{key}'")
@@ -20,12 +20,12 @@ def set_master_key : String
       return key
     else
       puts " Failed to store master key with security"
-      nil
+      ""
     end
   else
     puts " No supported keyring found (secret-tool or security)"
     puts "   Install libsecret-tools on Linux or use macOS Keychain"
-     nil
+     ""
   end
 end
 
