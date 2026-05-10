@@ -1,31 +1,31 @@
 require "random/secure"
 require "system"
 
-def set_master_key : Bool
+def set_master_key : String
   key = Random::Secure.hex(64)
   
   if system("which secret-tool > /dev/null 2>&1")
     success = system("echo '#{key}' | secret-tool store --label='anv master key' anv-key master")
     if success
       puts " Master key stored in system keyring (secret-tool)"
-      return true
+      return key
     else
       puts " Failed to store master key with secret-tool"
-      return false
+      nil 
     end
   elsif system("which security > /dev/null 2>&1")
     success = system("security add-generic-password -a #{ENV["USER"]} -s anv-master-key -w '#{key}'")
     if success
       puts " Master key stored in system keychain (security)"
-      return true
+      return key
     else
       puts " Failed to store master key with security"
-      return false
+      nil
     end
   else
     puts " No supported keyring found (secret-tool or security)"
     puts "   Install libsecret-tools on Linux or use macOS Keychain"
-    return false
+     nil
   end
 end
 
