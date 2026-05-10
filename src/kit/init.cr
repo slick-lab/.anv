@@ -1,4 +1,5 @@
 require "./en_de"
+require "./master_key"
 require "random/secure"
 
 def init
@@ -8,7 +9,7 @@ def init
   else
     Dir.mkdir_p(".anv")
     template_data = "{}"
-    key = read_master_key
+    key = set_master_key
     encrypted_store = encrypt(template_data, key)
     if encrypted_store.nil?
       puts "ERROR: Failed to encrypt initial store"
