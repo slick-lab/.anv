@@ -10,6 +10,9 @@ def init
     Dir.mkdir_p(".anv")
     template_data = "{}"
     key = set_master_key
+    if key.empty?
+    puts "an error occured pls retry"
+    end
     encrypted_store = encrypt(template_data, key)
     if encrypted_store.nil?
       puts "ERROR: Failed to encrypt initial store"
