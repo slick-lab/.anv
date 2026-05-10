@@ -5,9 +5,6 @@ require "./master_key"
 
 def read_master_key : String?
   get_master_key
- end
-
-  File.read(master_key_path).strip
 end
 
 def encrypt(data : String, key : String) : String?
