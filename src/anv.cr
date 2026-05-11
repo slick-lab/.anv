@@ -71,12 +71,14 @@ def main
       args = args[1..-1] || [] of String
     end
     run(args)
-  when "delete"
+  when "delete", "rm", # i added rm to make it feel similar to gnu utils rm 🙂
    if ARGV.size < 2
    puts "error what am i to delete"
    exit 1
   end 
   delete(ARGV[1])
+ when "list"
+  list_keys
   when "help"
     puts "Usage: anv <command> [arguments]"
     puts ""
@@ -84,6 +86,8 @@ def main
     puts "  init                     Initialize anv in current directory"
     puts "  set KEY=value            Set a secret"
     puts "  get KEY                  Get a secret"
+    puts "  rm KEY / delete KEY      Deletes a secret"
+    puts " list                      list all secrets"
     puts "  run -- <command>         Run command with secrets injected"
     puts "  help                     Show this help message"
   else
