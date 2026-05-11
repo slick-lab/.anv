@@ -1,6 +1,4 @@
-require "./kit/init"
-require "./kit/set_get"
-require "./kit/en_de"
+require "./kit/*"
 
 def run(command_args : Array(String))
   if command_args.empty?
@@ -73,6 +71,12 @@ def main
       args = args[1..-1] || [] of String
     end
     run(args)
+  when "delete"
+   if ARGV.size < 2
+   puts "error what am i to delete"
+   exit 1
+  end 
+  delete(ARGV[1])
   when "help"
     puts "Usage: anv <command> [arguments]"
     puts ""
