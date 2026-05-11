@@ -11,7 +11,7 @@ def list_keys
   end
   
   encrypted_blob = File.read(".anv/store")
-  plain = decrypt_hmac(encrypted_blob, master_key)
+  plain = decrypt(encrypted_blob, master_key)
   if plain.nil?
     puts "ERROR: Decryption failed"
     return
