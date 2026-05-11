@@ -1,5 +1,5 @@
 def list_keys
-  unless File.exist?(".anv/store")
+  unless File.exists?(".anv/store")
     puts "ERROR: No store found. Run `anv init` first."
     return
   end
