@@ -37,7 +37,7 @@ def set(key_value : String)
   begin
     key, value = key_value.split("=", 2)
 
-    unless File.exists?(".anv/store")
+    unless File.exists?(".anv")
       puts "ERROR: No store found. Run `anv init` first."
       return
     end
@@ -48,7 +48,7 @@ def set(key_value : String)
       return
     end
 
-    encrypted_blob = File.read(".anv/store")
+    encrypted_blob = File.read(".anv")
     plain = decrypt(encrypted_blob, master_key)
     if plain.nil?
       puts "ERROR: Decryption failed. Corrupted store or wrong key."
@@ -64,7 +64,7 @@ def set(key_value : String)
       return
     end
 
-    File.write(".anv/store", new_encrypted)
+    File.write(".anv", new_encrypted)
     puts "✓ #{key} set successfully"
   ensure
     release_lock(lock)
@@ -75,7 +75,7 @@ def get(key : String)
   lock = acquire_lock
 
   begin
-    unless File.exists?(".anv/store")
+    unless File.exists?(".anv")
       puts "ERROR: No store found. Run `anv init` first."
       return
      end
@@ -86,7 +86,7 @@ def get(key : String)
       return
     end
 
-    encrypted_blob = File.read(".anv/store")
+    encrypted_blob = File.read(".anv")
     plain = decrypt(encrypted_blob, master_key)
     if plain.nil?
       puts "ERROR: Decryption failed. Corrupted store or wrong key."
