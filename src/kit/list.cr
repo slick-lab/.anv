@@ -1,5 +1,5 @@
 def list_keys
-  unless File.exists?(".anv/store")
+  unless File.exists?(".anv")
     puts "ERROR: No store found. Run `anv init` first."
     return
   end
@@ -10,7 +10,7 @@ def list_keys
     return
   end
   
-  encrypted_blob = File.read(".anv/store")
+  encrypted_blob = File.read(".anv")
   plain = decrypt(encrypted_blob, master_key)
   if plain.nil?
     puts "ERROR: Decryption failed"
