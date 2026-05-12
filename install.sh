@@ -1,104 +1,79 @@
 #!/bin/bash
-
+# anv installer - fetches the latest binary from GitHub Releases
+# deepseek v4-pro gave me this btw
 set -e
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+REPO="slick-lab/.anv"
+BINARY_NAME="anv"
 
 # Detect OS
-OS_TYPE=$(uname -s)
-ARCH=$(uname -m)
+detect_os() {
+  case "$(uname -s)" in
+    Linux*)   echo "linux" ;;
+    Darwin*)  echo "darwin" ;;
+    *)        echo "unsupported" ;;
+  esac
+}
 
-echo -e "${YELLOW}Detecting OS...${NC}"
-echo "System: $OS_TYPE ($ARCH)"
+# Detect architecture
+detect_arch() {
+  case "$(uname -m)" in
+    x86_64|amd64) echo "amd64" ;;
+    aarch64|arm64) echo "arm64" ;;
+    *) echo "unsupported" ;;
+  esac
+}
 
-# Set variables based on OS
-case "$OS_TYPE" in
-  Linux)
-    ARTIFACT_ID="6896595962"
-    BINARY_NAME="anv-linux"
-    ;;
-  Darwin)
-    ARTIFACT_ID="6896596357"
-    BINARY_NAME="anv-macos"
-    ;;
-  *)
-    echo -e "${RED}Error: Unsupported OS: $OS_TYPE${NC}"
-    echo "Only Linux and macOS are supported."
-    exit 1
-    ;;
-esac
+OS=$(detect_os)
+ARCH=$(detect_arch)
 
-echo -e "${YELLOW}Downloading $BINARY_NAME...${NC}"
-
-# Check if curl is available
-if ! command -v curl &> /dev/null; then
-  echo -e "${RED}Error: curl is required but not installed.${NC}"
+if [ "$OS" = "unsupported" ] || [ "$ARCH" = "unsupported" ]; then
+  echo "❌ Unsupported OS/architecture: $(uname -s) / $(uname -m)"
+  echo "   anv currently supports Linux and macOS on x86_64 and arm64."
   exit 1
 fi
 
-# Check if unzip is available
-if ! command -v unzip &> /dev/null; then
-  echo -e "${RED}Error: unzip is required but not installed.${NC}"
+# Set the target binary name from release
+if [ "$OS" = "linux" ]; then
+  RELEASE_BIN="anv-linux"
+elif [ "$OS" = "darwin" ]; then
+  RELEASE_BIN="anv-macos"
+fi
+
+echo "📦 Fetching latest anv release for $OS/$ARCH..."
+
+# Get download URL from GitHub API
+DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/$REPO/releases/latest" | grep "browser_download_url.*$RELEASE_BIN" | cut -d '"' -f 4)
+
+if [ -z "$DOWNLOAD_URL" ]; then
+  echo "❌ Could not find download URL for $RELEASE_BIN"
+  echo "   Check if the release exists at: https://github.com/$REPO/releases"
   exit 1
 fi
 
 # Create temporary directory
-TEMP_DIR=$(mktemp -d)
-trap "rm -rf $TEMP_DIR" EXIT
+TMP_DIR=$(mktemp -d)
+cd "$TMP_DIR"
 
-cd "$TEMP_DIR"
+echo "⬇️  Downloading $RELEASE_BIN..."
+curl -L -o "$BINARY_NAME" "$DOWNLOAD_URL"
 
-# GitHub Actions artifact download URL
-ARTIFACT_URL="https://github.com/slick-lab/.anv/actions/runs/25604543565/artifacts/$ARTIFACT_ID/download"
+chmod +x "$BINARY_NAME"
 
-echo -e "${YELLOW}Downloading artifact from GitHub Actions...${NC}"
+# Install to /usr/local/bin
+INSTALL_PATH="/usr/local/bin/$BINARY_NAME"
 
-# Download the artifact (it will be a ZIP file)
-if ! curl -L -o artifact.zip "$ARTIFACT_URL" 2>/dev/null; then
-  echo -e "${RED}Error: Failed to download artifact from:${NC}"
-  echo "$ARTIFACT_URL"
-  echo ""
-  echo "Make sure the artifact is still available and your internet connection is working."
-  exit 1
-fi
-
-# Extract the artifact
-if ! unzip -q artifact.zip; then
-  echo -e "${RED}Error: Failed to extract artifact${NC}"
-  exit 1
-fi
-
-# Find the binary (it might be in a subdirectory)
-BINARY_PATH=$(find . -name "*anv*" -type f | head -n 1)
-
-if [ -z "$BINARY_PATH" ]; then
-  echo -e "${RED}Error: Could not find binary in artifact${NC}"
-  exit 1
-fi
-
-# Make it executable
-chmod +x "$BINARY_PATH"
-
-# Determine install location
-INSTALL_DIR="/usr/local/bin"
-BINARY_DEST="$INSTALL_DIR/anv"
-
-# Check if we need sudo
-if [ ! -w "$INSTALL_DIR" ]; then
-  echo -e "${YELLOW}Requesting sudo access to install to $INSTALL_DIR...${NC}"
-  sudo cp "$BINARY_PATH" "$BINARY_DEST"
-  sudo chmod +x "$BINARY_DEST"
+if [ -w "/usr/local/bin" ]; then
+  mv "$BINARY_NAME" "$INSTALL_PATH"
 else
-  cp "$BINARY_PATH" "$BINARY_DEST"
-  chmod +x "$BINARY_DEST"
+  echo "🔒 Need sudo to install to /usr/local/bin"
+  sudo mv "$BINARY_NAME" "$INSTALL_PATH"
 fi
 
-echo -e "${GREEN}✓ Installation successful!${NC}"
-echo "Binary installed to: $BINARY_DEST"
+# Clean up
+cd /
+rm -rf "$TMP_DIR"
+
+echo "✅ anv installed successfully to $INSTALL_PATH"
 echo ""
-echo "Test it:"
-echo "  anv --help"
+echo "Run 'anv --help' to get started."
