@@ -6,11 +6,11 @@ def delete(key : String)
   begin
    m_key = read_master_key
    return nil unless m_key
-   unless File.exists?(".anv/store")
+   unless File.exists?(".anv")
     puts "error cannot find the store pls run init first"
     return
    end 
-   en_blob = File.read(".anv/store") 
+   en_blob = File.read(".anv") 
    plain_blob = decrypt(en_blob, m_key)
    if plain_blob.nil?
     puts "ERROR: decryption failed"
@@ -29,7 +29,7 @@ def delete(key : String)
    puts "encryption failed"
    return 
  end 
- File.write(".anv/store", new_encrypted)
+ File.write(".anv", new_encrypted)
  puts "key deleted successfully"
 ensure 
  release_lock(lock)
