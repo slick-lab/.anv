@@ -7,7 +7,6 @@ def init
   if File.exists?(".anv")
     puts ".anv file exists use help for help"
   else
-    Dir.mkdir_p(".anv")
     template_data = "{}"
     key = set_master_key
     if key.empty?
@@ -18,7 +17,7 @@ def init
       puts "ERROR: Failed to encrypt initial store"
       return
     end
-    File.write(".anv/store", encrypted_store)
+    File.write(".anv", encrypted_store)
 
     puts ".anv initialized successfully"
   end
