@@ -2,6 +2,10 @@ require "./en_de"
 require "system"
 def rotate
   key = read_master_key
+  if key.nil?
+   puts "couldn't read keys"
+   return
+ end
   store = File.read(".anv")
   plain = decrypt(store, key)
   if plain.nil?
