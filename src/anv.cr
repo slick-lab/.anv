@@ -7,7 +7,7 @@ def run(command_args : Array(String))
     return
   end
 
-  unless File.exists?(".anv/store")
+  unless File.exists?(".anv")
     puts "ERROR: No store found. Run `anv init` first."
     return
   end
@@ -18,7 +18,7 @@ def run(command_args : Array(String))
     return
   end
 
-  encrypted_blob = File.read(".anv/store")
+  encrypted_blob = File.read(".anv")
   plain = decrypt(encrypted_blob, master_key)
   if plain.nil?
     puts "ERROR: Decryption failed"
@@ -79,6 +79,8 @@ def main
   delete(ARGV[1])
  when "list"
   list_keys
+ when "rotate"
+  rotate
   when "help"
     puts "Usage: anv <command> [arguments]"
     puts ""
@@ -88,6 +90,7 @@ def main
     puts "  get KEY                  Get a secret"
     puts "  rm KEY / delete KEY      Deletes a secret"
     puts " list                      list all secrets"
+    puts " rotate                    rotate keys"
     puts "  run -- <command>         Run command with secrets injected"
     puts "  help                     Show this help message"
   else
