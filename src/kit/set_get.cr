@@ -2,7 +2,7 @@ require "json"
 require "file_utils"
 require "./en_de"
 
-LOCK_FILE = ".anv/store.lock"
+LOCK_FILE = "store.lock"
 MAX_RETRIES = 50
 RETRY_DELAY = 0.05
 

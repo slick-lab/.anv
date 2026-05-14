@@ -18,7 +18,7 @@ def rotate
    puts "removed key"
   elsif system("which security > /dev/null 2>&1")
     system("security delete-generic-password -a #{ENV["USER"]} -s anv-master-key 2>/dev/null")
-    puts "renoved key"
+    puts "removed key"
   else
    puts "no supported keyring found"
   end

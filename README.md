@@ -1,5 +1,16 @@
 
 # anv 
+<div align="center">
+  <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="100" cy="100" r="90" fill="#111111"/>
+    <circle cx="65" cy="135" r="8" fill="#50FA7B"/>
+    <path d="M85 70L60 100L85 130" stroke="white" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M115 70L140 100L115 130" stroke="white" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M80 105H120" stroke="#50FA7B" stroke-width="10" stroke-linecap="round"/>
+  </svg>
+  <h1>.anv</h1>
+  <p>Secure, type-safe environment managed by <b>slick-lab</b></p>
+</div>
 
 No .env. No leaks. No AI reading your secrets.
 
@@ -20,7 +31,7 @@ No .env. No leaks. No AI reading your secrets.
 One-line install:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/slick-lab/.anv/refs/heads/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/slick-lab/.anv/refs/heads/master/install.sh | sh
 ```
 
 ## Build from source
@@ -49,6 +60,9 @@ anv run -- node index.js
 - anv init Creates .anv/ directory, encrypted store, stores master key in OS keyring
 - anv set KEY=value Encrypts and stores a secret
 - anv get KEY Decrypts and returns the value
+- anv rotate rotates the master.key
+- anv rm KEY deletes the value
+- anv list list all keys 
 - anv run -- cmd Runs command with secrets injected as env vars
 
 ## How master key is stored (no more ".env paradox")

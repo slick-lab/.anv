@@ -71,15 +71,15 @@ def main
       args = args[1..-1] || [] of String
     end
     run(args)
-  when "delete", "rm", # i added rm to make it feel similar to gnu utils rm 🙂
-   if ARGV.size < 2
-   puts "error what am i to delete"
-   exit 1
-  end 
-  delete(ARGV[1])
- when "list"
-  list_keys
- when "rotate"
+  when  "rm", # i added rm to make it feel similar to gnu utils rm 
+   if ARGV.size < 1
+    puts "error what am i to delete"
+    exit 1
+   end 
+   delete(ARGV[1])
+  when "list"
+   list_keys
+  when "rotate"
   rotate
   when "help"
     puts "Usage: anv <command> [arguments]"
