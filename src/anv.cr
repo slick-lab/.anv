@@ -31,8 +31,8 @@ def run(command_args : Array(String))
   data.each do |key, value|
     env[key.to_s] = value.to_s
   end
-
-  Process.run(command_args[0], command_args[1..-1] || [] of String, env: env, shell: true)
+  p 
+  Process.exec(command_args[0], command_args[1..-1], env: env)
 end
 
 def main

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Define variables
-URL_LINUX="https://github.com/slick-lab/.anv/releases/download/v0.2.1/anv-linux"
-URL_MACOS="https://github.com/slick-lab/.anv/releases/download/v0.2.1/anv-macos"
+URL_LINUX="https://github.com/slick-lab/.anv/releases/download/v0.2.2/anv-linux"
+URL_MACOS="https://github.com/slick-lab/.anv/releases/download/v0.2.2/anv-macos"
 DEST="/usr/local/bin/anv"
 
 # Detect OS

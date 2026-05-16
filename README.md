@@ -88,7 +88,7 @@ const dbUrl = process.env.DB_URL;
 You just change how you run it:
 
 ```bash
-anv run -- node app.js
+anv run node app.js
 ```
 
 Security
