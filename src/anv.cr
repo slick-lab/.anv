@@ -89,8 +89,8 @@ def main
     puts "  set KEY=value            Set a secret"
     puts "  get KEY                  Get a secret"
     puts "  rm KEY / delete KEY      Deletes a secret"
-    puts " list                      list all secrets"
-    puts " rotate                    rotate keys"
+    puts "  list                      list all secrets"
+    puts "  rotate                    rotate keys"
     puts "  run -- <command>         Run command with secrets injected"
     puts "  help                     Show this help message"
   else
