@@ -1,16 +1,8 @@
 
 # anv 
-<div align="center">
-  <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="100" cy="100" r="90" fill="#111111"/>
-    <circle cx="65" cy="135" r="8" fill="#50FA7B"/>
-    <path d="M85 70L60 100L85 130" stroke="white" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M115 70L140 100L115 130" stroke="white" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M80 105H120" stroke="#50FA7B" stroke-width="10" stroke-linecap="round"/>
-  </svg>
-  <h1>.anv</h1>
-  <p>Secure, type-safe environment managed by <b>slick-lab</b></p>
-</div>
+<p align="center">
+  <img src="./logo.svg" width="200" alt=".anv logo">
+</p>
 
 No .env. No leaks. No AI reading your secrets.
 
