@@ -56,6 +56,9 @@ anv run -- node index.js
 - anv rm KEY deletes the value
 - anv list list all keys 
 - anv run -- cmd Runs command with secrets injected as env vars
+- anv keys dislplays your current masterkey 
+- anv help shows the help message
+- anv delete removes the master key from os keyring(use if you know what you are doing)
 
 ## How master key is stored (no more ".env paradox")
 
