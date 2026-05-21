@@ -3,7 +3,9 @@ require "system"
 
 def set_master_key : String
   key = Random::Secure.hex(64)
-  
+  # lets try to check if there is a key in the keyring first, if there is we should use that instead of creating a new one, otherwise we will lose access to all secrets on every run 
+  check_key = get_master_key
+  return check_key if check_key
   if system("which secret-tool > /dev/null 2>&1")
     success = system("echo '#{key}' | secret-tool store --label='anv master key' anv-key master")
     if success
@@ -50,4 +52,22 @@ def get_master_key : String?
   
   puts " Master key not found in any system keyring"
   nil
+end
+
+def display_master_key
+  key = get_master_key
+  if key
+    puts "Master Key: #{key}"
+  else
+    puts "No master key found. Run `anv init` to create one."
+  end
+end
+
+def delete_master_key
+  if system("which secret-tool > /dev/null 2>&1")
+    system("secret-tool clear anv-key master")
+  end
+  if system("which security > /dev/null 2>&1")  
+    system("security delete-generic-password -a #{ENV["USER"]} -s anv-master-key")
+  end
 end

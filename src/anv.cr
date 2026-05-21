@@ -43,6 +43,11 @@ def main
     puts "  init                     Initialize anv in current directory"
     puts "  set KEY=value            Set a secret"
     puts "  get KEY                  Get a secret"
+    puts "  rm KEY / delete KEY      Deletes a secret"
+    puts "  list                      list all secrets"
+    puts "  rotate                    rotate keys"
+    puts "  key                       display master key"
+    puts "  delete                    delete master key from system keyring"
     puts "  run -- <command>         Run command with secrets injected"
     puts "  help                     Show this help message"
     exit 1
@@ -81,6 +86,10 @@ def main
    list_keys
   when "rotate"
   rotate
+  when "key"
+    display_master_key
+  when "delete"
+    delete_master_key
   when "help"
     puts "Usage: anv <command> [arguments]"
     puts ""
@@ -91,6 +100,8 @@ def main
     puts "  rm KEY / delete KEY      Deletes a secret"
     puts "  list                      list all secrets"
     puts "  rotate                    rotate keys"
+    puts "  key                       display master key"
+    puts "  delete                    delete master key from system keyring"
     puts "  run -- <command>         Run command with secrets injected"
     puts "  help                     Show this help message"
   else
