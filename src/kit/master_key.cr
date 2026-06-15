@@ -2,7 +2,7 @@ require "random/secure"
 require "system"
 
 def set_master_key : String
-  key = Random::Secure.hex(64)
+  key = Random::Secure.hex(128)
   # lets try to check if there is a key in the keyring first, if there is we should use that instead of creating a new one, otherwise we will lose access to all secrets on every run 
   check_key = get_master_key
   return check_key if check_key
