@@ -28,5 +28,6 @@ def rotate
    puts "encryption failed.."
  else
   File.write(".anv", encrypted)
+  puts "encryption was successfull"
  end
 end
