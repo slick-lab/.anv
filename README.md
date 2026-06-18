@@ -20,10 +20,12 @@ No .env. No leaks. No AI reading your secrets.
 
 ## Install
 
-One-line install:
+
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/slick-lab/.anv/refs/heads/master/install.sh | sh
+sudo add-apt-repository ppa:zendrx/anv
+sudo apt update
+sudo apt install anv
 ```
 
 ## Build from source
